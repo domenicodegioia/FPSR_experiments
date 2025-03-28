@@ -15,3 +15,4 @@ for _backend in sys.modules["external"].backend:
     elif _backend == "pytorch":
         from .svd_gcn import SVDGCN
         from .fpsr import FPSR
+        from .spectral_cf import SpectralCF
