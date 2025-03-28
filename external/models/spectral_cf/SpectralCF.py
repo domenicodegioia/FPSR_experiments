@@ -59,9 +59,14 @@ class SpectralCF(RecMixin, BaseRecommenderModel):
         ]
         self.autoset_params()
 
-        row, col = data.sp_i_train.nonzero()
-        self._inter = coo_matrix((np.ones_like(row, dtype=np.float64), (row, col)),
+        row, col = self._data.sp_i_train.nonzero()
+        self.inter = coo_matrix((np.ones_like(row, dtype=np.float64), (row, col)),
                                  shape=(self._num_users, self._num_items))
+        self._inter = torch.sparse_coo_tensor(
+            indices=torch.LongTensor(np.array([self.inter.row, self.inter.col])),
+            values=torch.FloatTensor(self.inter.data),
+            size=self.inter.shape, dtype=torch.float
+        ).coalesce().to(self.device)
 
 
         self._adj = self.get_adj_matrix()
@@ -70,18 +75,21 @@ class SpectralCF(RecMixin, BaseRecommenderModel):
                                       n_layers=self._n_layers, n_filters=self._n_filters, inter=self._inter,
                                       adj=self._adj, num_users=self._num_users, num_items=self._num_items,
                                       seed=self._seed, l_reg=self._l_reg)
+        del self.inter
 
     def get_adj_matrix(self):
-        adjacency = dok_matrix((self._num_users + self._num_items,
-                                   self._num_users + self._num_items), dtype=np.float32)
-        adjacency = adjacency.tolil()
-        ratings = self._data.sp_i_train.tolil()
+        num_users, num_items = self._num_users, self._num_items
+        row, col, data = self.inter.row, self.inter.col, self.inter.data
 
-        adjacency[:self._num_users, self._num_users:] = ratings
-        adjacency[self._num_users:, :self._num_users] = ratings.T
-        adjacency = adjacency.todok()
+        rows = np.concatenate([row, col + num_users])
+        cols = np.concatenate([col + num_users, row])
+        values = np.concatenate([data, data])
 
-        return adjacency
+        indices = torch.tensor([rows, cols], dtype=torch.long, device=self.device)
+        values = torch.tensor(values, dtype=torch.float32, device=self.device)
+        shape = (num_users + num_items, num_users + num_items)
+
+        return torch.sparse_coo_tensor(indices, values, size=shape, device=self.device).coalesce()
 
     def get_recommendations(self, k: int = 100):
         predictions_top_k_test = {}

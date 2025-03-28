@@ -49,9 +49,20 @@ class SpectralCFModel(torch.nn.Module, ABC):
         self.A = adj
 
         A_tilde = self._get_norm_adj()
-        I = torch.eye(self.num_items + self.num_users)
+
+        indices = torch.arange(self.num_users + self.num_items, device=self.device)
+        I = torch.sparse_coo_tensor(indices=torch.stack([indices, indices]),
+                                    values=torch.ones(self.num_users + self.num_items, device=self.device),
+                                    size=(self.num_users + self.num_items, self.num_users + self.num_items))
+
+        # L = torch.sparse.add(I, -1.0, A_tilde)  # L = I - A_tilde
         L = I - A_tilde
-        self.A_hat = (I + L).to(self.device)
+
+        # self.A_hat = torch.sparse.add(I, 1.0, L)  # A_hat = I + L = 2I - A_tilde
+        self.A_hat = I + L
+
+        del I, L, A_tilde
+
 
         self.user_embeddings = None
         self.item_embeddings = None
@@ -74,17 +85,18 @@ class SpectralCFModel(torch.nn.Module, ABC):
         self.optimizer = torch.optim.RMSprop(self.parameters(), lr=self.learning_rate)
 
     def _get_norm_adj(self):
-        sumArr = np.array(self.A.sum(axis=1)).flatten() + 1e-7
-        diag = 1.0 / sumArr
-        D = scipy.sparse.diags(diag)
-        A_tilde = D @ self.A
-        A_tilde = A_tilde.tocoo()
+        A = self.A.coalesce()
+        indices = A.indices()
+        values = A.values()
+        row = indices[0]
 
-        indices = torch.tensor([A_tilde.row, A_tilde.col], dtype=torch.long)
-        values = torch.tensor(A_tilde.data, dtype=torch.float32)
-        A_tilde = torch.sparse_coo_tensor(indices, values, size=A_tilde.shape)
+        row_sum = torch.zeros(A.shape[0], device=self.device).index_add_(0, row, values)
+        inv_deg = 1.0 / (row_sum + 1e-7)
 
-        return A_tilde
+        norm_values = values * inv_deg[row]
+        A_tilde = torch.sparse_coo_tensor(indices, norm_values, A.shape, device=self.device)
+
+        return A_tilde.coalesce()
 
     def get_ego_embeddings(self):
         user_embeddings = self.Gu.weight
