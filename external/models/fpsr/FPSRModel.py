@@ -169,7 +169,7 @@ class FPSRModel:
         del Q_hat
         Phi = torch.zeros_like(Q_inv, device=self.device)
         S = torch.zeros_like(Q_inv, device=self.device)
-        for _ in range(50):
+        for _ in tqdm(range(50)):
             Z_tilde = Z_aux + Q_inv @ (self.rho * (S - Phi))
             gamma = torch.diag(Z_tilde) / (torch.diag(Q_inv) + 1e-10)
             Z = Z_tilde - Q_inv * gamma  # Update Z

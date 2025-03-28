@@ -6,7 +6,6 @@ import torch
 import numpy as np
 from scipy.sparse import coo_matrix
 
-from elliot.dataset.samplers import custom_sampler as cs
 from elliot.recommender import BaseRecommenderModel
 from elliot.recommender.base_recommender_model import init_charger
 from elliot.recommender.recommender_utils_mixin import RecMixin
@@ -51,7 +50,6 @@ class FPSR(RecMixin, BaseRecommenderModel):
     """
     @init_charger
     def __init__(self, data, config, params, *args, **kwargs):
-        self._sampler = cs.Sampler(self._data.i_train_dict)
         if self._batch_size < 1:
             self._batch_size = self._num_users
 
