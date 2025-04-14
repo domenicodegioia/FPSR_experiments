@@ -95,7 +95,7 @@ class SpectralCF(RecMixin, BaseRecommenderModel):
         predictions_top_k_test = {}
         predictions_top_k_val = {}
         with torch.no_grad():
-            for index, offset in enumerate(range(0, self._num_users)):
+            for index, offset in enumerate(range(0, self._num_users, self._batch_size)):
                 offset_stop = min(offset + self._batch_size, self._num_users)
                 predictions = self._model.predict(offset, offset_stop)
                 recs_val, recs_test = self.process_protocol(k, predictions, offset, offset_stop)
