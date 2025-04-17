@@ -113,12 +113,18 @@ experiment:
         save_recs: False
         verbose: True
         validation_metric: Recall@20
+        validation_rate: 5
         hyper_max_evals: 20
         hyper_opt_alg: tpe
       epochs: 200
       lr: [loguniform, -9.21034037198, -2.30258509299]  # 0.1 - 0.0001
-      batch_size: 128
+      batch_size: 1024
       factors: [16,32,64]
       n_layers: [2,3,4]
       n_filters: [8,16,32]
       l_w: 0.001
+      early_stopping:
+        patience: 5
+        mode: auto
+        monitor: Recall@20
+        verbose: True
