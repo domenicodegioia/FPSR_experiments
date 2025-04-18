@@ -1,8 +1,10 @@
 experiment:
   backend: pytorch
   data_config:
-    strategy: dataset
-    dataset_path: ../data/{0}/
+    strategy: fixed
+    train_path: ../data/{0}/train_fpsr.tsv
+    test_path: ../data/{0}/test_fpsr.tsv
+    validation_path: ../data/{0}/valid_fpsr.tsv
   dataset: amazon-cds
   top_k: 20
   evaluation:
