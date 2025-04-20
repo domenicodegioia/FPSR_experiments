@@ -163,7 +163,7 @@ class FPSRModel:
             self.update_S(item_list[torch.where(~split)[0]])
 
     def item_similarity(self, inter_mat, V, d_i, d_i_inv) -> torch.Tensor:
-        Q_hat = inter_mat + self.w_2 * torch.diag(torch.pow(d_i_inv.squeeze(), 2)) + self.eta
+        Q_hat = inter_mat + self.w_2 * torch.diag(torch.pow(d_i_inv, 2).flatten()) + self.eta
         Q_inv = torch.inverse(Q_hat + self.rho * torch.eye(inter_mat.shape[0], device=self.device))
         Z_aux = (Q_inv @ Q_hat @ (torch.eye(inter_mat.shape[0], device=self.device) - self.l_w * d_i * V @ V.T * d_i_inv))
         del Q_hat
