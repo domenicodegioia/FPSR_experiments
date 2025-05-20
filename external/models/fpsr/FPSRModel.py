@@ -25,6 +25,8 @@ class FPSRModel:
                  w_2,
                  rho,
                  inter,
+                 dataset,
+                 save_heatmap,
                  random_seed,
                  name="FPSR",
                  **kwargs
@@ -54,6 +56,8 @@ class FPSRModel:
         self.w_2 = w_2
         self.rho = rho
         self.inter = inter
+        self.dataset = dataset
+        self.save_heatmap = save_heatmap
 
         # compute user-item interaction matrix
         self.inter = torch.sparse_coo_tensor(
@@ -125,21 +129,17 @@ class FPSRModel:
         del self.S_indices, self.S_values
 
         ###### COMPUTING HEATMAP
-        # # to save S in numpy dense version
-        # logger.info(f"Creating heatmap")
-        # S_dense = self.S.clone().to_dense().cpu().numpy()
-        # # S_mean = np.mean(S_dense)
-        # # S_std = np.std(S_dense)
-        # # S_dense = (S_dense - S_mean) / S_std
-        # S_min = np.min(S_dense)
-        # S_max = np.max(S_dense)
-        # S_dense = (S_dense - S_min) / (S_max - S_min)
-        # # np.save(f'{os.getcwd()}/heatmap/yelp2018/fpsr/similarity_matrix.npy', S_dense)
-        # np.save('/home/ironman/projects/fpsr-sir_elliot/heatmap/yelp2018/fpsr/similarity_matrix.npy', S_dense)
-        # # np.savetxt('self_S.tsv', S_dense, delimiter='\t')
-        # del S_dense
-        # logger.info(f"Created")
-        # sys.exit()
+        if self.save_heatmap:
+            # to save S in numpy dense version
+            logger.info(f"Creating heatmap")
+            sim_matrix = self.S.clone().to_dense().cpu().numpy()
+            logger.info(f"Min: {np.min(sim_matrix)}")
+            logger.info(f"Max: {np.max(sim_matrix)}")
+            logger.info(f"Mean: {np.mean(sim_matrix)}")
+            logger.info(f"Std: {np.std(sim_matrix)}")
+            np.save(f'{os.getcwd()}/heatmap/{self.dataset}/fpsr/similarity_matrix.npy', sim_matrix)
+            del sim_matrix
+            logger.info(f"Created")
 
     def update_S(self, item_list) -> None:
         if item_list.shape[0] <= self.tau * self.num_items:  # |I_n| <= tau * |I|
