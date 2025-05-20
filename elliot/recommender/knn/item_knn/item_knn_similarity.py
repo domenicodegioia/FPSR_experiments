@@ -1,5 +1,8 @@
 import pickle
 
+import os
+import sys
+
 import numpy as np
 from scipy import sparse
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances, haversine_distances, chi2_kernel, manhattan_distances
@@ -8,12 +11,15 @@ from sklearn.preprocessing import normalize
 import similaripy as sim
 from operator import itemgetter
 
+from elliot.utils import logging as logging_project
+logger = logging_project.get_logger("__main__")
+
 class Similarity(object):
     """
     Simple kNN class
     """
 
-    def __init__(self, data, num_neighbors, similarity, implicit, **kwargs):
+    def __init__(self, data, num_neighbors, similarity, implicit, dataset, save_heatmap, **kwargs):
         self._data = data
         self._ratings = data.train_dict
         self._num_neighbors = num_neighbors
@@ -22,6 +28,9 @@ class Similarity(object):
         self._alpha = kwargs['alpha']
         self._tversky_alpha = kwargs['tversky_alpha']
         self._tversky_beta= kwargs['tversky_beta']
+
+        self.dataset = dataset
+        self.save_heatmap = save_heatmap
 
         if self._implicit:
             self._URM = self._data.sp_i_train
@@ -95,6 +104,18 @@ class Similarity(object):
         # self.compute_neighbors()
 
         # del self._similarity_matrix
+
+        if self.save_heatmap:
+            # to save similarity_matrix in numpy dense version
+            logger.info(f"Creating heatmap")
+            sim_matrix = W_sparse.todense()
+            logger.info(f"Min: {np.min(sim_matrix)}")
+            logger.info(f"Max: {np.max(sim_matrix)}")
+            logger.info(f"Mean: {np.mean(sim_matrix)}")
+            logger.info(f"Std: {np.std(sim_matrix)}")
+            np.save(f'{os.getcwd()}/heatmap/{self.dataset}/itemknn/similarity_matrix.npy', sim_matrix)
+            logger.info(f"Created")
+            del sim_matrix
 
     # def compute_neighbors(self):
     #     self._neighbors = {}

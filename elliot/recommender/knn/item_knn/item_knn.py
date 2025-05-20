@@ -56,7 +56,8 @@ class ItemKNN(RecMixin, BaseRecommenderModel):
             ("_asymmetric_alpha", "asymmetric_alpha", "asymalpha", False, None, lambda x: x if x else ""),
             ("_tversky_alpha", "tversky_alpha", "tvalpha", False, None, lambda x: x if x else ""),
             ("_tversky_beta", "tversky_beta", "tvbeta", False, None, lambda x: x if x else ""),
-            ("_row_weights", "row_weights", "rweights", None, None, lambda x: x if x else "")
+            ("_row_weights", "row_weights", "rweights", None, None, lambda x: x if x else ""),
+            ("_save_heatmap", "save_heatmap", "save_heatmap", False, bool, None)
         ]
         self.autoset_params()
 
@@ -75,7 +76,8 @@ class ItemKNN(RecMixin, BaseRecommenderModel):
         else:
             if (not self._normalize) or (self._asymmetric_alpha) or (self._tversky_alpha) or (self._tversky_beta) or (self._row_weights) or (self._shrink):
                 self.logger.info("Options normalize, asymmetric_alpha, tversky_alpha, tversky_beta, row_weights are ignored with standard implementation. Try with implementation: aiolli")
-            self._model = Similarity(data=self._data, num_neighbors=self._num_neighbors, similarity=self._similarity, implicit=self._implicit, alpha=self._asymmetric_alpha, tversky_alpha=self._tversky_alpha, tversky_beta=self._tversky_beta)
+            self._model = Similarity(data=self._data, num_neighbors=self._num_neighbors, similarity=self._similarity, implicit=self._implicit, alpha=self._asymmetric_alpha, tversky_alpha=self._tversky_alpha, tversky_beta=self._tversky_beta,
+                                     dataset=self._config.dataset, save_heatmap=self._save_heatmap)
 
     def get_single_recommendation(self, mask, k, *args):
 #        return {u: self._model.get_user_recs(u, mask, k) for u in self._ratings.keys()}

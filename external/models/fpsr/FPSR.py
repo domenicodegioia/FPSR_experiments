@@ -63,7 +63,8 @@ class FPSR(RecMixin, BaseRecommenderModel):
             ("_w_2", "w_2", "w_2", 1.0, float, None),
             ("_eta", "eta", "eta", 1.0, float, None),
             ("_tau", "tau", "tau", 0.2, float, None),
-            ("_eps", "eps", "eps", 5e-3, float, None)
+            ("_eps", "eps", "eps", 5e-3, float, None),
+            ("_save_heatmap", "save_heatmap", "save_heatmap", False, bool, None)
         ]
         self.autoset_params()
 
@@ -84,6 +85,8 @@ class FPSR(RecMixin, BaseRecommenderModel):
             w_2=self._w_2,
             rho=self._rho,
             inter=self._inter,
+            dataset=self._config.dataset,
+            save_heatmap=self._save_heatmap,
             random_seed=self._seed
         )
 
