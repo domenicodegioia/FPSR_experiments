@@ -8,6 +8,8 @@ def import_model_by_backend(tensorflow_cmd, pytorch_cmd):
             break
 
 
+from .psge import PSGE
+
 import sys
 for _backend in sys.modules["external"].backend:
     if _backend == "tensorflow":
@@ -16,3 +18,8 @@ for _backend in sys.modules["external"].backend:
         from .svd_gcn import SVDGCN
         from .fpsr import FPSR
         from .spectral_cf import SpectralCF
+
+        # FPSR variants
+        from .fpsr_knn import FPSR_KNN
+        from .fpsr_rp3beta import FPSR_RP3beta
+        from .fpsr_easer import FPSR_EASEr
