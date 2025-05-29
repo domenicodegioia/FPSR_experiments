@@ -106,6 +106,16 @@ class FPSR_EASEr_model:
         del P
         self.W_sparse[diagonal_indices] = 0.0
 
+        self.W_sparse = self.csr2coo_tensor(self.W_sparse)
+
+    def csr2coo_tensor(self, matrix) -> torch.Tensor:
+        coo = matrix.tocoo()
+        indices = torch.tensor([coo.row, coo.col], dtype=torch.int64).to(self.device)
+        values = torch.tensor(coo.data, dtype=torch.float32).to(self.device)
+        shape = torch.Size(coo.shape)
+        sparse_tensor = torch.sparse_coo_tensor(indices, values, shape).to(self.device)
+        return sparse_tensor
+
     def update_W(self) -> None:
         self.d_i = self._degree(dim=0, exp=-0.5).reshape(-1, 1)  # D_I^(1/2)
         self.d_i_inv = self._degree(dim=0, exp=0.5).reshape(1, -1)  # D_I^(-1/2)
