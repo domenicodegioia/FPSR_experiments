@@ -55,7 +55,7 @@ class SVDGCNModel(torch.nn.Module, ABC):
         emb1_final = torch.squeeze(emb1).to(self.device).mm(self.FS)
         emb2_final = torch.squeeze(emb2).to(self.device).mm(self.FS)
 
-        out = torch.sum(emb1_final * emb2_final, 1)
+        out = torch.sum(emb1_final * emb2_final, -1)
 
         return emb1_final, emb2_final, out
 
