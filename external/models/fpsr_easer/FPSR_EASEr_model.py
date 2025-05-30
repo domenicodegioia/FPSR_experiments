@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from sklearn.preprocessing import normalize
 import similaripy as sim
+import scipy.sparse as sp
 
 from elliot.utils import logging as logging_project
 logger = logging_project.get_logger("__main__")
@@ -98,18 +99,17 @@ class FPSR_EASEr_model:
             P = torch.linalg.inv(self.W_sparse)#.cpu().numpy()
             torch.cuda.empty_cache()
             self.W_sparse = P / (-torch.diagonal(P).unsqueeze(0))
+            self.W_sparse[diagonal_indices] = 0.0
         else:
             logger.info(f"Classical Inverse")
             P = np.linalg.inv(self.W_sparse.todense())
             self.W_sparse = P / (-np.diag(P))
-
+            self.W_sparse[diagonal_indices] = 0.0
+            self.W_sparse = self.csr2coo_tensor(self.W_sparse)
         del P
-        self.W_sparse[diagonal_indices] = 0.0
-
-        self.W_sparse = self.csr2coo_tensor(self.W_sparse)
 
     def csr2coo_tensor(self, matrix) -> torch.Tensor:
-        coo = matrix.tocoo()
+        coo = sp.csr_matrix(matrix).tocoo()
         indices = torch.tensor([coo.row, coo.col], dtype=torch.int64).to(self.device)
         values = torch.tensor(coo.data, dtype=torch.float32).to(self.device)
         shape = torch.Size(coo.shape)
