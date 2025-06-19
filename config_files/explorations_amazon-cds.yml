@@ -136,3 +136,13 @@ experiment:
         hyper_opt_alg: tpe
       factors: [quniform, 10, 2000, 1]
       seed: 42
+
+    external.SVDAE:
+      meta:
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      factors: [quniform, 10, 2000, 1]
+      seed: 42
