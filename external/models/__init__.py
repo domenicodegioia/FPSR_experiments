@@ -16,6 +16,7 @@ for _backend in sys.modules["external"].backend:
         pass
     elif _backend == "pytorch":
         from .svd_gcn import SVDGCN
+        from .svd_gcn_s import SVDGCNS
         from .fpsr import FPSR
         from .spectral_cf import SpectralCF
 
@@ -23,3 +24,5 @@ for _backend in sys.modules["external"].backend:
         from .fpsr_knn import FPSR_KNN
         from .fpsr_rp3beta import FPSR_RP3beta
         from .fpsr_easer import FPSR_EASEr
+        from .fpsr_svd import FPSR_PureSVD
+        from .fpsr_psge import FPSR_PSGE

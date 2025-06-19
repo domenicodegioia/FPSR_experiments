@@ -9,45 +9,13 @@ from scipy.sparse import coo_matrix
 from elliot.recommender import BaseRecommenderModel
 from elliot.recommender.base_recommender_model import init_charger
 from elliot.recommender.recommender_utils_mixin import RecMixin
-from .FPSRModel import FPSRModel
+from .FPSR_PureSVD_model import FPSR_PureSVD_model
 from elliot.utils import logging as logging_project
 
 logger = logging_project.get_logger("__main__")
 
-class FPSR(RecMixin, BaseRecommenderModel):
-    r"""
-    FPSR: Fine-tuning Partition-aware Item Similarities for Efficient and Scalable Recommendation
+class FPSR_PureSVD(RecMixin, BaseRecommenderModel):
 
-    For further details, please refer to the `paper <https://dl.acm.org/doi/10.1145/3543507.3583240>`_
-
-    Args:
-        eigen_dim: Number of eigenvectors extracted
-        l_w: Regularization coefficient
-        rho: Hyperparameter introduced by ADMM
-        w_1: l_1 regularization term
-        w_2: l_2 regularization term
-        eta: regularizes the similarity between items within the partition
-        eps: tolerance
-        tau: Size ratio
-
-    To include the recommendation model, add it to the config file adopting the following pattern:
-
-    .. code:: yaml
-
-      models:
-        external.FPSR:
-          meta:
-            save_recs: True
-          eigen_dim: 256
-          l_w: 0.2
-          rho: 500
-          w_1: 0.8
-          w_2: 0.1
-          eta: 1.0
-          eps: 5e-3
-          tau: 0.5
-          seed: 2026
-    """
     @init_charger
     def __init__(self, data, config, params, *args, **kwargs):
         if self._batch_size < 1:
@@ -56,7 +24,7 @@ class FPSR(RecMixin, BaseRecommenderModel):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self._params_list = [
-            ("_eigen_dim", "eigen_dim", "eigen_dim", 64, int, None),
+            ("_eigen_dim", "eigen_dim", "factors", 64, int, None),
             ("_l_w", "l_w", "l_w", 0.5, float, None),
             ("_rho", "rho", "rho", 5000, int, None),
             ("_w_1", "w_1", "w_1", 0.1, float, None),
@@ -64,7 +32,10 @@ class FPSR(RecMixin, BaseRecommenderModel):
             ("_eta", "eta", "eta", 1.0, float, None),
             ("_tau", "tau", "tau", 0.2, float, None),
             ("_eps", "eps", "eps", 5e-3, float, None),
-            ("_save_heatmap", "save_heatmap", "save_heatmap", False, bool, None)
+
+            # for RP3beta
+            ("_factors", "factors", "factors", 10, int, None)
+
         ]
         self.autoset_params()
 
@@ -73,7 +44,7 @@ class FPSR(RecMixin, BaseRecommenderModel):
         self._inter = coo_matrix((np.ones_like(row, dtype=np.float64), (row, col)),
                                  shape=(self._num_users, self._num_items))
 
-        self._model = FPSRModel(
+        self._model = FPSR_PureSVD_model(
             num_users=self._num_users,
             num_items=self._num_items,
             eigen_dim=self._eigen_dim,
@@ -85,14 +56,15 @@ class FPSR(RecMixin, BaseRecommenderModel):
             w_2=self._w_2,
             rho=self._rho,
             inter=self._inter,
-            dataset=self._config.dataset,
-            save_heatmap=self._save_heatmap,
-            random_seed=self._seed
+            data=self._data,
+            random_seed=self._seed,
+
+            factors=self._factors
         )
 
     @property
     def name(self):
-        return "FPSR" \
+        return "FPSR_PureSVD" \
             + f"_{self.get_base_params_shortcut()}" \
             + f"_{self.get_params_shortcut()}"
 
