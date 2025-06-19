@@ -2,15 +2,10 @@ experiment:
   backend: pytorch
 
   data_config:
-    strategy: dataset
-    dataset_path: ../data/{0}/{0}.tsv
-  splitting:
-    test_splitting:
-      strategy: random_subsampling
-      test_ratio: 0.15
-    validation_splitting:
-      strategy: random_subsampling
-      test_ratio: 0.15
+    strategy: fixed
+    train_path: ../data/{0}/splitting/0/0/train.tsv
+    validation_path: ../data/{0}/splitting/0/0/val.tsv
+    test_path: ../data/{0}/splitting/0/test.tsv
   dataset: yelp2018
 
   top_k: 20
@@ -23,52 +18,52 @@ experiment:
 
   models:
 
-#    external.FPSR_KNN:
-#      meta:
-#        save_recs: False
-#        verbose: False
-#        validation_metric: Recall@20
-#        hyper_max_evals: 50
-#        hyper_opt_alg: tpe
-#      eigen_dim: [64,128,256]
-#      batch_size: 64  # only for evaluation
-#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-#      rho: 500
-#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-#      eta: [0.01, 0.1, 1]
-#      eps: 5e-3
-#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-#      seed: 2026
-#      # Item-kNN
-#      neighbors: [uniform, 5, 1000]
-#      asymmetric_alpha: [uniform, 0, 2]
-#      tversky_alpha: [uniform, 0, 2]
-#      tversky_beta: [uniform, 0, 2]
-#      similarity: [cosine, jaccard, dot, asym, tversky]
+    external.FPSR_KNN:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 50
+        hyper_opt_alg: tpe
+      eigen_dim: [64,128,256]
+      batch_size: 64  # only for evaluation
+      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+      rho: 500
+      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      eta: [0.01, 0.1, 1]
+      eps: 5e-3
+      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+      seed: 2026
+      # Item-kNN
+      neighbors: [uniform, 5, 1000]
+      asymmetric_alpha: [uniform, 0, 2]
+      tversky_alpha: [uniform, 0, 2]
+      tversky_beta: [uniform, 0, 2]
+      similarity: [cosine, jaccard, dot, asym, tversky]
 
-#    external.FPSR_RP3beta:
-#      meta:
-#        save_recs: False
-#        verbose: False
-#        validation_metric: Recall@20
-#        hyper_max_evals: 50
-#        hyper_opt_alg: tpe
-#      eigen_dim: [64,128,256]
-#      batch_size: 64  # only for evaluation
-#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-#      rho: 500
-#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-#      eta: [0.01, 0.1, 1]
-#      eps: 5e-3
-#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-#      seed: 2026
-#      # RP3beta
-#      neighborhood: [uniform, 50, 10000]
-#      alpha: [uniform, 0, 5]
-#      beta: [uniform, 0, 5]
-#      normalize_similarity: [True, False]
+    external.FPSR_RP3beta:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 50
+        hyper_opt_alg: tpe
+      eigen_dim: [64,128,256]
+      batch_size: 64  # only for evaluation
+      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+      rho: 500
+      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      eta: [0.01, 0.1, 1]
+      eps: 5e-3
+      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+      seed: 2026
+      # RP3beta
+      neighborhood: [uniform, 50, 10000]
+      alpha: [uniform, 0, 5]
+      beta: [uniform, 0, 5]
+      normalize_similarity: [True, False]
 
     external.FPSR_EASEr:
       meta:
@@ -90,3 +85,45 @@ experiment:
       # EASEr
       l2_norm: [uniform, 10, 10e5]
       neighborhood: -1
+
+    external.FPSR_PureSVD:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 50
+        hyper_opt_alg: tpe
+      eigen_dim: [64,128,256]
+      batch_size: 64  # only for evaluation
+      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+      rho: 500
+      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      eta: [0.01, 0.1, 1]
+      eps: 5e-3
+      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+      seed: 2026
+      # PureSVD
+      factors: [quniform, 10, 2000, 1]
+
+    external.FPSR_PSGE:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 50
+        hyper_opt_alg: tpe
+      eigen_dim: [64,128,256]
+      batch_size: 64  # only for evaluation
+      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+      rho: 500
+      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      eta: [0.01, 0.1, 1]
+      eps: 5e-3
+      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+      seed: 2026
+      # PSGE
+      factors: [quniform, 10, 2000, 1]
+      alpha: [uniform, 0, 1]
+      beta: [uniform, 0, 1]
