@@ -1,0 +1,24 @@
+experiment:
+
+  gpu: 0
+
+  data_config:
+    strategy: fixed
+    train_path: ../data/{0}/train_svdae.tsv
+    test_path: ../data/{0}/test_svdae.tsv
+  dataset: gowalla
+
+  top_k: 100
+  evaluation:
+    cutoffs: [10, 20, 100]
+    simple_metrics: [Recall, nDCG, Precision, HR]
+
+  external_models_path: ../external/models/__init__.py
+
+  models:
+    external.SVD_AE:
+      meta:
+        save_recs: False
+        verbose: True
+      batch_eval: 1024
+      factors: 1194
