@@ -1,1 +1,1 @@
-from .Slim import Slim
+from .PureSVD import PureSVD
