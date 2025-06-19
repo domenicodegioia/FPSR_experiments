@@ -18,7 +18,6 @@ for _backend in sys.modules["external"].backend:
         from .svd_gcn import SVDGCN
         from .svd_gcn_s import SVDGCNS
         from .fpsr import FPSR
-        from .spectral_cf import SpectralCF
 
         # FPSR variants
         from .fpsr_knn import FPSR_KNN
