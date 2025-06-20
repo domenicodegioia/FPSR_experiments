@@ -147,6 +147,17 @@ experiment:
       factors: [quniform, 10, 2000, 1]
       seed: 42
 
+    external.GFCF:
+      meta:
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      svd_factors: [choice, [64, 128, 256]]
+      alpha: [loguniform, -2.30258509299, -0.22314355131]
+      seed: 42
+
     external.FPSR_EASEr:
       meta:
         save_recs: False
