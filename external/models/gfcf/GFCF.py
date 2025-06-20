@@ -24,7 +24,7 @@ class GFCF(RecMixin, BaseRecommenderModel):
     @init_charger
     def __init__(self, data, config, params, *args, **kwargs):
         self._params_list = [
-            ("_batch_eval", "batch_eval", "batch_eval", 512, int, None),
+            ("_batch_eval", "batch_eval", "batch_eval", 1024, int, None),
             ("_svd_factors", "svd_factors", "svd_factors", 256, int, None),
             ("_alpha", "alpha", "alpha", 0.3, float, None)
         ]
