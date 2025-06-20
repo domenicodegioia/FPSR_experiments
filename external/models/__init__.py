@@ -27,3 +27,4 @@ for _backend in sys.modules["external"].backend:
         from .fpsr_easer import FPSR_EASEr
         from .fpsr_svd import FPSR_PureSVD
         from .fpsr_psge import FPSR_PSGE
+        from .fpsr_svdae import FPSR_SVDAE
