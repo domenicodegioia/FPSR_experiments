@@ -137,7 +137,7 @@ experiment:
       factors: [quniform, 10, 2000, 1]
       seed: 42
 
-    external.SVDAE:
+    external.SVD_AE:
       meta:
         save_recs: False
         verbose: True
