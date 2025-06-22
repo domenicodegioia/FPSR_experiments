@@ -152,3 +152,24 @@ experiment:
       seed: 2026
       # SVD-AE
       factors: [quniform, 10, 2000, 1]
+
+    external.FPSR_GFCF:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 50
+        hyper_opt_alg: tpe
+      eigen_dim: [64,128,256]
+      batch_size: 64  # only for evaluation
+      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+      rho: 500
+      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+      eta: [0.01, 0.1, 1]
+      eps: 5e-3
+      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+      seed: 2026
+      # GFCF
+      factors: [choice, [64, 128, 256]]
+      alpha: [loguniform, -2.30258509299, -0.22314355131]
