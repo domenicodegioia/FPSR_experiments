@@ -149,7 +149,7 @@ class BSPM(RecMixin, BaseRecommenderModel):
             if self._sharpening_off == False:
                 ret = U_2
             elif self._sharpening_off == True:
-                ret = self.idl_beta * idl_out + U_2
+                ret = self._idl_beta * idl_out + U_2
         else:
             ret = self._idl_beta * idl_out + U_2
 
@@ -167,6 +167,6 @@ class BSPM(RecMixin, BaseRecommenderModel):
 
     @property
     def name(self):
-        return "BSPM" \
-               + f"_{self.get_base_params_shortcut()}" \
-               + f"_{self.get_params_shortcut()}"
+        return "BSPM" #\
+               # + f"_{self.get_base_params_shortcut()}" \
+               # + f"_{self.get_params_shortcut()}"
