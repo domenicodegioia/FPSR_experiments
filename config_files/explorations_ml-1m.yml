@@ -158,26 +158,17 @@ experiment:
       alpha: [loguniform, -2.30258509299, -0.22314355131]
       seed: 42
 
-    external.BSPM:
+    external.ChebyCF:
       meta:
-        validation_metric: Recall@20
-        verbose: False
         save_recs: False
-        hyper_max_evals: 20
+        verbose: False
+        validation_metric: Recall@20
         hyper_opt_alg: tpe
-      batch_eval: 512
-      factors: [quniform, 100, 800, 1]
-      idl_solver: [euler, rk4]
-      blur_solver: [euler, rk4]
-      sharpen_solver: [euler, rk4]
-      K_idl: [1,2,3,4]
-      T_idl: [quniform, 1.0, 5.0, 0.1]
-      K_b: [1,2,3,4]
-      T_b: [quniform, 1.0, 5.0, 0.1]
-      K_s: [1,2,3,4]
-      T_s: [quniform, 1.0, 5.0, 0.1]
-      idl_beta: [quniform, 0.0, 1.0, 0.1]
-      final_sharpening: [True, False]
-      sharpening_off: [True, False]
-      t_point_combination: [True, False]
+        hyper_max_evals: 20
+      batch_eval: 1024
+      K: 8
+      phi: [quniform, 1, 20, 0.5]
+      eta: [128,256,512,1024,2048]
+      alpha: [0.0,0.1,0.2,0.3,0.4,0.5]
+      beta: [0.0,0.1,0.2,0.3,0.4,0.5]
       seed: 42
