@@ -12,6 +12,7 @@ from .psge import PSGE
 from .gfcf import GFCF
 from .svd_ae import SVD_AE
 from .bspm import BSPM
+from .chebycf import ChebyCF
 
 import sys
 for _backend in sys.modules["external"].backend:
