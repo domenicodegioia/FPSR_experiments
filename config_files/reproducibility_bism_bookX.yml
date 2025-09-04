@@ -1,0 +1,28 @@
+experiment:
+
+  backend: pytorch
+
+  data_config:
+    strategy: fixed
+    train_path: ../data/{0}/train.tsv
+    test_path: ../data/{0}/test.tsv
+
+  dataset: bookX
+  top_k: 10
+  evaluation:
+    cutoffs: [10]
+    simple_metrics: [HR, MRR, nDCG]
+
+  gpu: 0
+  external_models_path: ../external/models/__init__.py
+
+  models:
+    external.BISM:
+      meta:
+        save_recs: False
+      alpha: 10
+      beta: 100
+      lamb: 10
+      epochs: 50
+      c: 6
+      seed: 42

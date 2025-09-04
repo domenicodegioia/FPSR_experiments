@@ -19,6 +19,7 @@ for _backend in sys.modules["external"].backend:
     if _backend == "tensorflow":
         pass
     elif _backend == "pytorch":
+        from .bism import BISM
         from .svd_gcn import SVDGCN
         from .svd_gcn_s import SVDGCNS
         from .gde import GDE
