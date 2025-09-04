@@ -20,6 +20,7 @@ for _backend in sys.modules["external"].backend:
     elif _backend == "pytorch":
         from .svd_gcn import SVDGCN
         from .svd_gcn_s import SVDGCNS
+        from .gde import GDE
         from .fpsr import FPSR
 
         # FPSR variants
