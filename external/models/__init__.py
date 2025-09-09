@@ -24,6 +24,9 @@ for _backend in sys.modules["external"].backend:
         from .svd_gcn import SVDGCN
         from .svd_gcn_s import SVDGCNS
         from .gde import GDE
+        from .sgde import SGDE
+        from .rsgde import RSGDE
+        from .csgde import CSGDE
         from .fpsr import FPSR
         from .fpsr_plus import FPSRplus
         from .fpsr_plus_f import FPSRplusF
