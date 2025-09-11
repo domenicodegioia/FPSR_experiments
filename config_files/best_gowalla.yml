@@ -60,7 +60,7 @@ experiment:
         save_recs: False
         verbose: False
       eigen_dim: 256
-      batch_size: 64  # only for evaluation
+      batch_size: 64
       l_w: 0.4
       rho: 500
       w_1: 1.0
@@ -68,4 +68,45 @@ experiment:
       eta: 0.1
       eps: 5e-3
       tau: 0.2
+      seed: 2026
+
+    external.GFCF:
+      meta:
+        save_recs: False
+        verbose: False
+      batch_eval: 512
+      svd_factors: 256
+      alpha: 0.21948822034403112
+      seed: 2026
+
+    external.FPSRplus:
+      meta:
+        save_recs: False
+        verbose: False
+      eigen_dim: 256
+      batch_size: 64
+      l_w: 0.2
+      rho: 500
+      w_1: 0.8
+      w_2: 5.0
+      eta: 0.1
+      eps: 5e-3
+      tau: 0.4
+      pop_ratio: 0.1
+      seed: 2026
+
+    external.FPSRplusF:
+      meta:
+        save_recs: False
+        verbose: False
+      eigen_dim: 256
+      batch_size: 64
+      l_w: 0.4
+      rho: 500
+      w_1: 0.5
+      w_2: 5.0
+      eta: 1.0
+      eps: 5e-3
+      tau: 0.5
+      pop_ratio: 0.1
       seed: 2026
