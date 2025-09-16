@@ -221,6 +221,60 @@ experiment:
         monitor: Recall@20
         verbose: True
 
+    external.GDE:
+      meta:
+        hyper_opt_alg: tpe
+        hyper_max_evals: 20
+        save_recs: False
+        verbose: False
+        validation_rate: 5
+        validation_metric: Recall@20
+      batch_size: 256
+      factors: 64
+      l_w: 0.01
+      feature_type: smoothed
+      smooth_ratio: [0.01, 0.05, 0.1, 0.2]
+      rough_ratio: 0.0
+      epochs: 500
+      lr: [loguniform, -6.907755278, -2.995732274]
+      dropout: [0.1, 0.2, 0.3, 0.4, 0.5]
+      beta: [quniform, 0.5, 5.0, 0.5]
+      loss_type: [adaptive, bpr]
+      seed: 42
+      early_stopping:
+        patience: 5
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+
+    external.CSGDE:
+      meta:
+        hyper_opt_alg: tpe
+        hyper_max_evals: 20
+        save_recs: False
+        verbose: False
+        validation_rate: 5
+        validation_metric: Recall@20
+      batch_size: 256
+      factors: 64
+      l_w: 0.01
+      feature_type: smoothed
+      smooth_ratio: [0.01, 0.05, 0.1, 0.2]
+      rough_ratio: 0.0
+      epochs: 500
+      lr: [loguniform, -6.907755278, -2.995732274]
+      dropout: [0.1, 0.2, 0.3, 0.4, 0.5]
+      beta: [quniform, 0.5, 5.0, 0.5]
+      loss_type: [adaptive, bpr]
+      coef_u: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
+      coef_i: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
+      seed: 42
+      early_stopping:
+        patience: 5
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+
     external.FPSRplus:
       meta:
         save_recs: False
