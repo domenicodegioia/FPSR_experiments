@@ -9,6 +9,7 @@ def import_model_by_backend(tensorflow_cmd, pytorch_cmd):
 
 
 from .psge import PSGE
+from .sgmc import SGMC
 from .gfcf import GFCF
 from .svd_ae import SVD_AE
 from .bspm import BSPM
