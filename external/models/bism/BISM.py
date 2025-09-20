@@ -42,7 +42,6 @@ class BISM(RecMixin, BaseRecommenderModel):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self._params_list = [
-            # ("_eigen_dim", "eigen_dim", "eigen_dim", 64, int, None),
             ("_alpha", "alpha", "alpha", 0.1, float, None),
             ("_beta", "beta", "beta", 0.1, float, None),
             ("_lamb", "lamb", "lamb", 0.1, float, None),
@@ -74,6 +73,7 @@ class BISM(RecMixin, BaseRecommenderModel):
     def train(self):
         start = time.time()
         for it in range(self._epochs):
+            self.logger.info(f"Epoch: {it+1}")
             loss = 0
             loss += self._model.train_step()
             self.evaluate(it, loss / (it + 1))
