@@ -111,3 +111,17 @@ experiment:
       tau: 0.5
       pop_ratio: 0.1
       seed: 2026
+
+    external.LightGCN:
+      meta:
+        verbose: False
+        save_weights: False
+        validation_metric: Recall@20
+      lr: 0.001
+      epochs: 1000
+      factors: 64
+      batch_size: 2048
+      l_w:
+      n_layers:
+      normalize: True
+      seed: 42
