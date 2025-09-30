@@ -67,15 +67,38 @@ class SGFCF(RecMixin, BaseRecommenderModel):
             homo_weight = homo_weight.unsqueeze(1)
             return value.pow(homo_weight)
 
-        self.rate_matrix = (U[:, :self._factors] * individual_weight(value[:self._factors], homo_ratio_user)).mm(
-            (V[:, :self._factors] * individual_weight(value[:self._factors], homo_ratio_item)).t())
+        V_weighted_t = (V[:, :self._factors] * individual_weight(value[:self._factors], homo_ratio_item)).t()
 
-        del homo_ratio_user, homo_ratio_item
-        del U, V, value, D_u, D_i,
+        del V, homo_ratio_item
         gc.collect()
         torch.cuda.empty_cache()
 
-        self.rate_matrix = self.rate_matrix / (self.rate_matrix.sum(1).unsqueeze(1))
+        self.rate_matrix = torch.empty(self._num_users, self._num_items, device=self.device)
+
+        # batching the instruction:
+        # self.rate_matrix = (U[:, :self._factors] * individual_weight(value[:self._factors], homo_ratio_user)).mm(
+        #             (V[:, :self._factors] * individual_weight(value[:self._factors], homo_ratio_item)).t())
+
+        for i in tqdm(range(0, self._num_users, self._batch_eval), desc="Reconstructing rate matrix",
+                      disable=not self._verbose):
+            stop_idx = min(i + self._batch_eval, self._num_users)
+            user_batch_U = U[i:stop_idx, :self._factors]
+            user_batch_homo = homo_ratio_user[i:stop_idx]
+            user_batch_weighted = user_batch_U * individual_weight(value[:self._factors], user_batch_homo)
+            self.rate_matrix[i:stop_idx] = user_batch_weighted.mm(V_weighted_t)
+
+        del U, value, D_u, D_i, homo_ratio_user, V_weighted_t
+        gc.collect()
+        torch.cuda.empty_cache()
+
+        # self.rate_matrix = self.rate_matrix / (self.rate_matrix.sum(1).unsqueeze(1))
+        row_sums = self.rate_matrix.sum(1, keepdim=True)
+        row_sums[row_sums == 0] = 1.0
+        self.rate_matrix.div_(row_sums)
+
+        del row_sums
+        gc.collect()
+        torch.cuda.empty_cache()
 
         # norm_freq_matrix = norm_freq_matrix.mm(norm_freq_matrix.t()).mm(norm_freq_matrix)
         high_order_matrix = torch.empty_like(norm_freq_matrix)
