@@ -125,3 +125,15 @@ experiment:
       n_layers:
       normalize: True
       seed: 42
+
+    external.BISM:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+      alpha: 0.08422832997467446
+      beta: 69.31627111404818
+      lamb: 44.099661193160514_
+      epochs: 12
+      batch_size: 2048
+      c: 4
