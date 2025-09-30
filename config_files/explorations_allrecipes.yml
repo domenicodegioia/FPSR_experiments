@@ -409,3 +409,27 @@ experiment:
       tau: [0.1, 0.2, 0.3, 0.4, 0.5]
       pop_ratio: 0.1
       seed: 2026
+
+    external.LightGCN:
+      meta:
+        hyper_opt_alg: tpe
+        hyper_max_evals: 20
+        verbose: False
+        save_weights: False
+        validation_rate: 5
+        validation_metric: Recall@20
+        restore: False
+        write_best_iterations: True
+      lr: 0.001
+      epochs: 1000
+      factors: 64
+      batch_size: 2048
+      l_w: [loguniform, -13.815510558, -4.60517018599]
+      n_layers: [choice, [1, 2, 3, 4]]
+      normalize: True
+      seed: 42
+      early_stopping:
+        patience: 5
+        mode: auto
+        monitor: Recall@20
+        verbose: True

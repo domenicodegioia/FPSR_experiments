@@ -322,3 +322,18 @@ experiment:
       tau: [0.1, 0.2, 0.3, 0.4, 0.5]
       pop_ratio: 0.1
       seed: 2026
+
+    external.BISM:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      alpha: [loguniform, -4.605170186, 2.302585093] # 0.01 - 10
+      beta: [loguniform, -4.605170186, 4.605170186] # 0.01 - 100
+      lamb: [loguniform, -2.302585093, 4.605170186] # 0.1 - 100
+      epochs: 20
+      batch_size: 2048
+      c: [quniform, 1, 10, 1]
+      seed: 42
