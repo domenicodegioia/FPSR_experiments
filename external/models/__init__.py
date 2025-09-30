@@ -14,6 +14,7 @@ from .gfcf import GFCF
 from .svd_ae import SVD_AE
 from .bspm import BSPM
 from .chebycf import ChebyCF
+from .linkprop import LinkProp
 
 import sys
 for _backend in sys.modules["external"].backend:
