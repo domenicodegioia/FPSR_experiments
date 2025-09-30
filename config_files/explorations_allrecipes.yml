@@ -410,6 +410,22 @@ experiment:
       pop_ratio: 0.1
       seed: 2026
 
+    external.SGFCF:
+      meta:
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      batch_eval: 64
+      factors: [quniform, 10, 2000, 1]
+      alpha: [quniform, 0, 10, 0.1]
+      beta_1: [quniform, 0, 2.5, 0.1]
+      beta_2: [quniform, 2.5, 5.0, 0.1]
+      gamma: [quniform, 0.0, 0.1, 0.05]
+      eps: [quniform, 0.0, 0.5, 0.02]
+      seed: 42
+
     external.LightGCN:
       meta:
         hyper_opt_alg: tpe
