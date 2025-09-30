@@ -18,446 +18,445 @@ experiment:
 
   models:
 
-    Random:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-      seed: 42
-
-    MostPop:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-
-    ItemKNN:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      neighbors: [uniform, 5, 1000]
-      asymmetric_alpha: [uniform, 0, 2]
-      tversky_alpha: [uniform, 0, 2]
-      tversky_beta: [uniform, 0, 2]
-      similarity: [cosine, jaccard, dot, asym, tversky]
-
-    EASER:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      l2_norm: [uniform, 10, 10e5]
-      neighborhood: -1
-
-    RP3beta:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      neighborhood: [uniform, 50, 10000]
-      alpha: [uniform, 0, 5]
-      beta: [uniform, 0, 5]
-      normalize_similarity: [True, False]
-
-    external.SVDGCN:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      factors: 64
-      epochs: 15
-      batch_size: 128
-      l_w: 0.01
-      lr: [uniform, 7, 9]
-      req_vec: [quniform, 60, 90, 1]
-      beta: 2.0
-      alpha: [uniform, 2, 3]
-      coef_u: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
-      coef_i: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
-      seed: 123
-
-    external.SVDGCNS:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      req_vec: [quniform, 15, 90, 1]
-      beta: [uniform, 2.0, 6.0]
-      alpha: [uniform, 2.0, 6.0]
-      seed: 42
-
-    external.FPSR:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-
-    external.PSGE:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      factors: [quniform, 10, 2000, 1]
-      alpha: [uniform, 0, 1]
-      beta: [uniform, 0, 1]
-      seed: 42
-
-    external.SGMC:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      factors: [quniform, 10, 2000, 1]
-      seed: 42
-
-    PureSVD:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      factors: [quniform, 10, 2000, 1]
-      seed: 42
-
-    external.SVD_AE:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      factors: [quniform, 10, 2000, 1]
-      seed: 42
-
-    external.GFCF:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      svd_factors: [choice, [64, 128, 256]]
-      alpha: [loguniform, -2.30258509299, -0.22314355131]
-      seed: 42
-
-    external.FPSR_EASEr:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # EASEr
-      l2_norm: [uniform, 10, 10e5]
-      neighborhood: -1
-
-    external.FPSR_KNN:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # Item-kNN
-      neighbors: [uniform, 5, 1000]
-      asymmetric_alpha: [uniform, 0, 2]
-      tversky_alpha: [uniform, 0, 2]
-      tversky_beta: [uniform, 0, 2]
-      similarity: [cosine, jaccard, dot, asym, tversky]
-
-    external.FPSR_RP3beta:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # RP3beta
-      neighborhood: [uniform, 50, 10000]
-      alpha: [uniform, 0, 5]
-      beta: [uniform, 0, 5]
-      normalize_similarity: [True, False]
-
-    external.FPSR_PureSVD:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # EASEr
-      factors: [quniform, 10, 2000, 1]
-
-    external.FPSR_PSGE:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # PSGE
-      factors: [quniform, 10, 2000, 1]
-      alpha: [uniform, 0, 1]
-      beta: [uniform, 0, 1]
-
-    external.FPSR_SVDAE:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # SVD-AE
-      factors: [quniform, 10, 2000, 1]
-
-    external.FPSR_GFCF:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 50
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64  # only for evaluation
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      seed: 2026
-      # GFCF
-      factors: [choice, [64, 128, 256]]
-      alpha: [loguniform, -2.30258509299, -0.22314355131]
-
-    external.BSPM:
-      meta:
-        validation_metric: Recall@20
-        verbose: False
-        save_recs: False
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      batch_eval: 512
-      factors: [quniform, 100, 800, 1]
-      idl_solver: [euler, rk4]
-      blur_solver: [euler, rk4]
-      sharpen_solver: [euler, rk4]
-      K_idl: [1,2,3,4]
-      T_idl: [quniform, 1.0, 5.0, 0.1]
-      K_b: [1,2,3,4]
-      T_b: [quniform, 1.0, 5.0, 0.1]
-      K_s: [1,2,3,4]
-      T_s: [quniform, 1.0, 5.0, 0.1]
-      idl_beta: [quniform, 0.0, 1.0, 0.1]
-      final_sharpening: [True, False]
-      sharpening_off: [True, False]
-      t_point_combination: [True, False]
-      seed: 42
-
-    external.ChebyCF:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_opt_alg: tpe
-        hyper_max_evals: 20
-      batch_eval: 1024
-      K: 8
-      phi: [quniform, 1, 20, 0.5]
-      eta: [128,256,512,1024,2048]
-      alpha: [0.0,0.1,0.2,0.3,0.4,0.5]
-      beta: [0.0,0.1,0.2,0.3,0.4,0.5]
-      seed: 42
-
-    external.BISM:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_opt_alg: tpe
-        hyper_max_evals: 20
-      alpha: [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-      beta: [0.0,0.1,0.2,0.3,0.4,0.5]
-      lamb: [0.01, 0.1, 1, 10, 100]
-      epochs: 15
-      c: [1,2,3,4,5,6,7,8,9,10]
-      seed: 42
-
-    external.FPSRplus:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      pop_ratio: 0.1
-      seed: 2026
-
-    external.FPSRplusF:
-      meta:
-        save_recs: False
-        verbose: False
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      eigen_dim: [64,128,256]
-      batch_size: 64
-      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
-      rho: 500
-      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
-      eta: [0.01, 0.1, 1]
-      eps: 5e-3
-      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
-      pop_ratio: 0.1
-      seed: 2026
-
-    external.SGFCF:
-      meta:
-        save_recs: False
-        verbose: True
-        validation_metric: Recall@20
-        hyper_max_evals: 20
-        hyper_opt_alg: tpe
-      batch_eval: 64
-      factors: [quniform, 10, 2000, 1]
-      alpha: [quniform, 0, 10, 0.1]
-      beta_1: [quniform, 0, 2.5, 0.1]
-      beta_2: [quniform, 2.5, 5.0, 0.1]
-      gamma: [quniform, 0.0, 0.1, 0.05]
-      eps: [quniform, 0.0, 0.5, 0.02]
-      seed: 42
-
-    external.LightGCN:
-      meta:
-        hyper_opt_alg: tpe
-        hyper_max_evals: 20
-        verbose: False
-        save_weights: False
-        validation_rate: 5
-        validation_metric: Recall@20
-        restore: False
-        write_best_iterations: True
-      lr: 0.001
-      epochs: 1000
-      factors: 64
-      batch_size: 2048
-      l_w: [loguniform, -13.815510558, -4.60517018599]
-      n_layers: [choice, [1, 2, 3, 4]]
-      normalize: True
-      seed: 42
-      early_stopping:
-        patience: 5
-        mode: auto
-        monitor: Recall@20
-        verbose: True
+#    Random:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#      seed: 42
+#
+#    MostPop:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#
+#    ItemKNN:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      neighbors: [uniform, 5, 1000]
+#      asymmetric_alpha: [uniform, 0, 2]
+#      tversky_alpha: [uniform, 0, 2]
+#      tversky_beta: [uniform, 0, 2]
+#      similarity: [cosine, jaccard, dot, asym, tversky]
+#
+#    EASER:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      l2_norm: [uniform, 10, 10e5]
+#      neighborhood: -1
+#
+#    RP3beta:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      neighborhood: [uniform, 50, 10000]
+#      alpha: [uniform, 0, 5]
+#      beta: [uniform, 0, 5]
+#      normalize_similarity: [True, False]
+#
+#    external.SVDGCN:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      factors: 64
+#      epochs: 15
+#      batch_size: 128
+#      l_w: 0.01
+#      lr: [uniform, 7, 9]
+#      req_vec: [quniform, 60, 90, 1]
+#      beta: 2.0
+#      alpha: [uniform, 2, 3]
+#      coef_u: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
+#      coef_i: [loguniform, -2.30258509299, -0.105360516]  # 0.1 - 0.9
+#      seed: 123
+#
+#    external.SVDGCNS:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      req_vec: [quniform, 15, 90, 1]
+#      beta: [uniform, 2.0, 6.0]
+#      alpha: [uniform, 2.0, 6.0]
+#      seed: 42
+#
+#    external.FPSR:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#
+#    external.PSGE:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      factors: [quniform, 10, 2000, 1]
+#      alpha: [uniform, 0, 1]
+#      beta: [uniform, 0, 1]
+#      seed: 42
+#
+#    external.SGMC:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      factors: [quniform, 10, 2000, 1]
+#      seed: 42
+#
+#    PureSVD:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      factors: [quniform, 10, 2000, 1]
+#      seed: 42
+#
+#    external.SVD_AE:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      factors: [quniform, 10, 2000, 1]
+#      seed: 42
+#
+#    external.GFCF:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      svd_factors: [choice, [64, 128, 256]]
+#      alpha: [loguniform, -2.30258509299, -0.22314355131]
+#      seed: 42
+#
+#    external.FPSR_EASEr:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # EASEr
+#      l2_norm: [uniform, 10, 10e5]
+#      neighborhood: -1
+#
+#    external.FPSR_KNN:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # Item-kNN
+#      neighbors: [uniform, 5, 1000]
+#      asymmetric_alpha: [uniform, 0, 2]
+#      tversky_alpha: [uniform, 0, 2]
+#      tversky_beta: [uniform, 0, 2]
+#      similarity: [cosine, jaccard, dot, asym, tversky]
+#
+#    external.FPSR_RP3beta:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # RP3beta
+#      neighborhood: [uniform, 50, 10000]
+#      alpha: [uniform, 0, 5]
+#      beta: [uniform, 0, 5]
+#      normalize_similarity: [True, False]
+#
+#    external.FPSR_PureSVD:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # EASEr
+#      factors: [quniform, 10, 2000, 1]
+#
+#    external.FPSR_PSGE:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # PSGE
+#      factors: [quniform, 10, 2000, 1]
+#      alpha: [uniform, 0, 1]
+#      beta: [uniform, 0, 1]
+#
+#    external.FPSR_SVDAE:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # SVD-AE
+#      factors: [quniform, 10, 2000, 1]
+#
+#    external.FPSR_GFCF:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 50
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64  # only for evaluation
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      seed: 2026
+#      # GFCF
+#      factors: [choice, [64, 128, 256]]
+#      alpha: [loguniform, -2.30258509299, -0.22314355131]
+#
+#    external.BSPM:
+#      meta:
+#        validation_metric: Recall@20
+#        verbose: False
+#        save_recs: False
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      batch_eval: 512
+#      factors: [quniform, 100, 800, 1]
+#      idl_solver: [euler, rk4]
+#      blur_solver: [euler, rk4]
+#      sharpen_solver: [euler, rk4]
+#      K_idl: [1,2,3,4]
+#      T_idl: [quniform, 1.0, 5.0, 0.1]
+#      K_b: [1,2,3,4]
+#      T_b: [quniform, 1.0, 5.0, 0.1]
+#      K_s: [1,2,3,4]
+#      T_s: [quniform, 1.0, 5.0, 0.1]
+#      idl_beta: [quniform, 0.0, 1.0, 0.1]
+#      final_sharpening: [True, False]
+#      sharpening_off: [True, False]
+#      t_point_combination: [True, False]
+#      seed: 42
+#
+#    external.ChebyCF:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_opt_alg: tpe
+#        hyper_max_evals: 20
+#      batch_eval: 1024
+#      K: 8
+#      phi: [quniform, 1, 20, 0.5]
+#      eta: [128,256,512,1024,2048]
+#      alpha: [0.0,0.1,0.2,0.3,0.4,0.5]
+#      beta: [0.0,0.1,0.2,0.3,0.4,0.5]
+#      seed: 42
+#
+#    external.BISM:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_opt_alg: tpe
+#        hyper_max_evals: 20
+#      alpha: [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+#      beta: [0.0,0.1,0.2,0.3,0.4,0.5]
+#      lamb: [0.01, 0.1, 1, 10, 100]
+#      epochs: 15
+#      c: [1,2,3,4,5,6,7,8,9,10]
+#      seed: 42
+#
+#    external.FPSRplus:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      pop_ratio: 0.1
+#      seed: 2026
+#
+#    external.FPSRplusF:
+#      meta:
+#        save_recs: False
+#        verbose: False
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      eigen_dim: [64,128,256]
+#      batch_size: 64
+#      l_w: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      rho: 500
+#      w_1: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      w_2: [0.1, 0.2, 0.5, 0.8, 1, 2, 5]
+#      eta: [0.01, 0.1, 1]
+#      eps: 5e-3
+#      tau: [0.1, 0.2, 0.3, 0.4, 0.5]
+#      pop_ratio: 0.1
+#      seed: 2026
+#
+#    external.SGFCF:
+#      meta:
+#        save_recs: False
+#        verbose: True
+#        validation_metric: Recall@20
+#        hyper_max_evals: 20
+#        hyper_opt_alg: tpe
+#      batch_eval: 64
+#      factors: [quniform, 10, 2000, 1]
+#      alpha: [quniform, 0, 10, 0.1]
+#      beta_1: [quniform, 0, 2.5, 0.1]
+#      beta_2: [quniform, 2.5, 5.0, 0.1]
+#      gamma: [quniform, 0.0, 0.1, 0.05]
+#      eps: [quniform, 0.0, 0.5, 0.02]
+#      seed: 42
+#
+#    external.LightGCN:
+#      meta:
+#        hyper_opt_alg: tpe
+#        hyper_max_evals: 20
+#        verbose: False
+#        save_weights: False
+#        validation_rate: 5
+#        validation_metric: Recall@20
+#        restore: False
+#        write_best_iterations: True
+#      lr: 0.001
+#      epochs: 1000
+#      factors: 64
+#      batch_size: 2048
+#      l_w: [loguniform, -13.815510558, -4.60517018599]
+#      n_layers: [choice, [1, 2, 3, 4]]
+#      normalize: True
+#      seed: 42
+#      early_stopping:
+#        patience: 5
+#        mode: auto
+#        monitor: Recall@20
+#        verbose: True
 
     external.LinkProp:
       meta:
-        meta:
-          save_recs: False
-          verbose: True
-          validation_metric: Recall@20
-          hyper_max_evals: 20
-          hyper_opt_alg: tpe
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
       alpha: 0.0
       beta: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]
       gamma: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]

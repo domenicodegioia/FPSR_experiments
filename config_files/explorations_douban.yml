@@ -356,12 +356,11 @@ experiment:
 
     external.LinkProp:
       meta:
-        meta:
-          save_recs: False
-          verbose: True
-          validation_metric: Recall@20
-          hyper_max_evals: 20
-          hyper_opt_alg: tpe
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
       alpha: 0.0
       beta: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]
       gamma: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]
