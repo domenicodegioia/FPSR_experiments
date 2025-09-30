@@ -12,6 +12,8 @@ from operator import itemgetter
 
 import numpy as np
 import scipy
+from scipy.sparse.linalg import spsolve
+from scipy.sparse.linalg import splu
 from sklearn.utils.extmath import safe_sparse_dot
 from tqdm import tqdm
 import torch
@@ -63,26 +65,23 @@ class EASER(RecMixin, BaseRecommenderModel):
             recs.update(proc_batch)
         return recs
 
-    def get_user_predictions(self, user_id, mask, top_k=10):
-        user_id = self._data.public_users.get(user_id)
-        b = self._preds[user_id]
-        a = mask[user_id]
-        b[~a] = -np.inf
-        indices, values = zip(*[(self._data.private_items.get(u_list[0]), u_list[1])
-                              for u_list in enumerate(b.data)])
-
-        indices = np.array(indices)
-        values = np.array(values)
-        local_k = min(top_k, len(values))
-        partially_ordered_preds_indices = np.argpartition(values, -local_k)[-local_k:]
-        real_values = values[partially_ordered_preds_indices]
-        real_indices = indices[partially_ordered_preds_indices]
-        local_top_k = real_values.argsort()[::-1]
-        return [(real_indices[item], real_values[item]) for item in local_top_k]
-
     def get_user_recs_batch(self, u, mask, k):
         u_index = itemgetter(*u)(self._data.public_users)
-        users_recs = np.where(mask[u_index, :], self._preds[u_index, :].toarray(), -np.inf)
+        if torch.cuda.is_available():
+            train_batch = self._train[u_index, :]
+            train_batch = torch.sparse_coo_tensor(
+                train_batch.nonzero(),
+                train_batch.data,
+                train_batch.shape,
+                dtype=torch.float32,
+                device="cuda"
+            )
+            preds = torch.sparse.mm(train_batch, self._similarity_matrix)
+            preds = preds.cpu().numpy()
+        else:
+            preds = safe_sparse_dot(self._train[u_index, :], self._similarity_matrix).toarray()
+
+        users_recs = np.where(mask[u_index, :], preds, -np.inf)
         index_ordered = np.argpartition(users_recs, -k, axis=1)[:, -k:]
         value_ordered = np.take_along_axis(users_recs, index_ordered, axis=1)
         local_top_k = np.take_along_axis(index_ordered, value_ordered.argsort(axis=1)[:, ::-1], axis=1)
@@ -124,28 +123,33 @@ class EASER(RecMixin, BaseRecommenderModel):
             self._similarity_matrix = torch.tensor(data=self._similarity_matrix.todense(),
                                                    dtype=torch.float32).cuda()
             torch.cuda.synchronize()
-            P = torch.linalg.inv(self._similarity_matrix).cpu().numpy()
+            S = np.zeros((self._data.num_items, self._data.num_items))
+            I = torch.eye(self._data.num_items).cuda()
+            batch_size=1024
+            for start in tqdm(range(0, self._data.num_items, batch_size), disable=False):
+                end = min(start + batch_size, self._data.num_items)
+                block = I[:, start:end]
+                X = torch.linalg.solve(self._similarity_matrix, block)
+                X = X.cpu().numpy()
+                diag_vals = -np.diag(X[start:end, :])
+                S[:, start:end] = X / diag_vals
+            np.fill_diagonal(S, 0)
+            self._similarity_matrix = S
             torch.cuda.empty_cache()
         else:
             self.logger.info(f"Classical Inverse")
             P = np.linalg.inv(self._similarity_matrix.todense())
-
-        self._similarity_matrix = P / (-np.diag(P))
-
-        self._similarity_matrix[diagonal_indices] = 0.0
+            self._similarity_matrix = P / (-np.diag(P))
+            self._similarity_matrix[diagonal_indices] = 0.0
 
         end = time.time()
         self.logger.info(f"The similarity computation has taken: {end - start}")
 
         if torch.cuda.is_available():
-            sparse_train = torch.sparse_coo_tensor(self._train.nonzero(), self._train.data, self._train.shape).cuda()
             self._similarity_matrix = torch.tensor(data=self._similarity_matrix,
                                                    dtype=torch.float32).cuda()
-            self._preds = torch.sparse.mm(sparse_train, self._similarity_matrix).cpu().to_sparse_coo()
-            self._preds = self.to_scipy_csr(self._preds)
-            self.logger.info(f"{type(self._preds)}")
             torch.cuda.empty_cache()
         else:
-            self._preds = safe_sparse_dot(self._train, scipy.sparse.csr_matrix(self._similarity_matrix)).tocsr()
+            self._similarity_matrix = scipy.sparse.csr_matrix(self._similarity_matrix)
 
         self.evaluate()
