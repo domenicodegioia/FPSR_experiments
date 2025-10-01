@@ -366,3 +366,16 @@ experiment:
       gamma: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]
       delta: [0.0, 0.17, 0.34, 0.5, 0.67, 0.84, 1.0]
       seed: 42
+
+    external.TurboCF:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      alpha: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+      power: [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+      filter: [1,2]
+      batch_eval: 1024
+      seed: 2022
