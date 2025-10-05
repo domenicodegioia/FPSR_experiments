@@ -147,6 +147,17 @@ experiment:
       factors: [quniform, 10, 2000, 1]
       seed: 42
 
+    RSVD:
+      meta:
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      factors: [quniform, 10, 2000, 1]
+      reg: [loguniform, -4.605170186, 6.907755278]
+      seed: 42
+
     external.SVD_AE:
       meta:
         save_recs: False
