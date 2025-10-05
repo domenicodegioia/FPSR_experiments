@@ -9,7 +9,7 @@ __email__ = 'vitowalter.anelli@poliba.it, claudio.pomo@poliba.it'
 
 from .base_recommender_model import BaseRecommenderModel
 
-from .latent_factor_models import PureSVD
+from .latent_factor_models import PureSVD, RSVD
 from .unpersonalized import Random, MostPop
 from .autoencoders import EASER
 from .graph_based import RP3beta
