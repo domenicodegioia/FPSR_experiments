@@ -1,5 +1,6 @@
 import time
 import random
+import sys
 
 import torch
 import numpy as np
@@ -12,7 +13,7 @@ from elliot.recommender.recommender_utils_mixin import RecMixin
 from elliot.utils import logging as logging_project
 logger = logging_project.get_logger("__main__")
 
-from .sparse_matmul import batch_sparse_matmul_sparse_output
+from .sparse_matmul import batch_dense_matmul
 
 class TurboCF(RecMixin, BaseRecommenderModel):
     r"""
@@ -65,129 +66,57 @@ class TurboCF(RecMixin, BaseRecommenderModel):
 
 
     def normalized_sparse_rating_matrix(self, m, alpha):
-        values = torch.ones((m.shape[1], 1)).to(self.device)
-        rowsum = torch.sparse.mm(m, values).to(self.device)
-        rowsum = torch.pow(rowsum, -alpha).squeeze()
+        rowsum = torch.sparse.sum(m, dim=1).to_dense()
+        rowsum = torch.pow(rowsum, -alpha)
 
-        values = torch.ones((m.shape[0], 1)).to(self.device)
-        colsum = torch.sparse.mm(m.t(), values).to(self.device)
-        colsum = torch.pow(colsum, alpha - 1).squeeze()
+        colsum = torch.sparse.sum(m, dim=0).to_dense()
+        colsum = torch.pow(colsum, alpha - 1)
 
-        diag_indices = torch.arange(rowsum.shape[0], device=self.device)
-        indices = torch.stack([diag_indices, diag_indices], dim=0)
-        d_mat_rows = torch.sparse_coo_tensor(
-            indices, rowsum, torch.Size([rowsum.size(0), rowsum.size(0)])
-        ).to(self.device)
+        indices = m.coalesce().indices()
+        values = m.coalesce().values()
 
-        diag_indices = torch.arange(colsum.shape[0], device=self.device)
-        indices = torch.stack([diag_indices, diag_indices], dim=0)
-        d_mat_cols = torch.sparse_coo_tensor(
-            indices, colsum, torch.Size([colsum.size(0), colsum.size(0)])
-        ).to(self.device)
+        row_factors = rowsum[indices[0]]
+        col_factors = colsum[indices[1]]
+        values = values * row_factors * col_factors
 
-        R_tilde = d_mat_rows.mm(m).mm(d_mat_cols)
+        R_tilde = torch.sparse_coo_tensor(indices, values, m.shape, device=self.device)
 
-        return R_tilde
-
+        return R_tilde.coalesce()
 
     def train(self):
         start = time.time()
 
         R_tilde = self.normalized_sparse_rating_matrix(self.R, self._alpha).to(self.device)
-        P = R_tilde.T @ R_tilde
-        P.float().coalesce().to(self.device)
-        P._values().pow_(self._power)
+        P = (R_tilde.T @ R_tilde).to_dense()
+        P.pow_(self._power)
 
         del R_tilde
+        torch.cuda.empty_cache()
 
         if self._filter == 1:
             self.LPF = (P)
 
         elif self._filter == 2:
-            PP = batch_sparse_matmul_sparse_output(A=P, B=P, device=self.device, batch_size=1000)
-            P_dense = P.to_dense()
-            PP_dense = PP.to_dense()
-            # self.LPF = (2 * P - P @ P)
-            LPF_dense = 2 * P_dense - PP_dense
-            self.LPF = LPF_dense.to_sparse()
+            # self.LPF = (2 * P - PP)
+            PP = batch_dense_matmul(A=P, B=P, device=self.device, batch_size=1000)
+            self.LPF = 2 * P
+            self.LPF.sub_(PP)
 
-            del P_dense, PP_dense, LPF_dense
+            del PP
             torch.cuda.empty_cache()
 
         elif self._filter == 3:
-            # P @ P
-            PP = batch_sparse_matmul_sparse_output(A=P, B=P, device=self.device, batch_size=1000)
-            # P @ P @ P
-            PPP = batch_sparse_matmul_sparse_output(A=PP, B=P, device=self.device, batch_size=1000)
-
-            P_dense = P.to_dense()
-            PP_dense = PP.to_dense()
-            PPP_dense = PPP.to_dense()
-
             # self.LPF = (P + 0.01 * (-P @ P @ P + 10 * P @ P - 29 * P))
-            LPF_dense = P_dense + 0.01 * (-PPP_dense + 10 * PP_dense - 29 * P_dense)
-            self.LPF = LPF_dense.to_sparse()
-
-            del P_dense, PP_dense, PPP_dense, PP, PPP, LPF_dense
-            torch.cuda.empty_cache()
+            # P @ P
+            PP = batch_dense_matmul(A=P, B=P, device=self.device, batch_size=1000)
+            # P @ P @ P
+            PPP = batch_dense_matmul(A=PP, B=P, device=self.device, batch_size=1000)
+            self.LPF = (P + 0.01 * (-PPP + 10 * PP - 29 * P))
 
         end = time.time()
         logger.info(f"The similarity computation has taken: {end - start}")
 
         self.evaluate()
-
-    # def batch_sparse_matmul_sparse_output(self, P, batch_size=1000):
-    #     """
-    #     Calcola P @ P a blocchi e restituisce una matrice sparse COO come output.
-    #     """
-    #     P = P.coalesce()
-    #     indices = P.indices()
-    #     values = P.values()
-    #     n = P.size(0)
-    #
-    #     P_dense = P.to_dense()
-    #     result_rows = []
-    #
-    #     for start in tqdm(range(0, n, batch_size)):
-    #         end = min(start + batch_size, n)
-    #
-    #         # Seleziona solo le righe del batch
-    #         mask = (indices[0] >= start) & (indices[0] < end)
-    #         batch_indices = indices[:, mask].clone()
-    #         batch_indices[0] -= start
-    #         batch_values = values[mask]
-    #
-    #         # Costruisci blocco sparso
-    #         P_block = torch.sparse_coo_tensor(
-    #             batch_indices,
-    #             batch_values,
-    #             size=(end - start, n),
-    #             device=P.device,
-    #             dtype=P.dtype
-    #         ).coalesce()
-    #
-    #         # Sparse @ Dense (eseguito su GPU)
-    #         block_result = torch.matmul(P_block, P_dense)  # (batch_size, n), denso
-    #
-    #         result_rows.append(block_result.cpu())
-    #
-    #     # Ricostruisci tutta la matrice densa su CPU
-    #     full_dense_cpu = torch.cat(result_rows, dim=0)  # shape: (n, n)
-    #
-    #     # Applica soglia per costruire sparse
-    #     mask = full_dense_cpu != 0
-    #
-    #     indices = mask.nonzero(as_tuple=False).T  # shape: (2, nnz)
-    #     values = full_dense_cpu[mask]
-    #
-    #     # Costruisci tensore sparso sul device finale
-    #     return torch.sparse_coo_tensor(
-    #             indices.to(self.device),
-    #             values.to(self.device),
-    #             size=(n, n),
-    #             device=self.device,
-    #             dtype=P.dtype
-    #     ).coalesce()
 
     def get_recommendations(self, k: int = 100):
         predictions_top_k_test = {}
@@ -218,5 +147,4 @@ class TurboCF(RecMixin, BaseRecommenderModel):
     @property
     def name(self):
         return "TurboCF" \
-               + f"_{self.get_base_params_shortcut()}" \
                + f"_{self.get_params_shortcut()}"

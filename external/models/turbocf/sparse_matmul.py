@@ -1,79 +1,28 @@
 import torch
 from tqdm import tqdm
 
-
-def batch_sparse_matmul_sparse_output(A, B, device, batch_size=1000):
+def batch_dense_matmul(A, B, device="cuda", batch_size=1000):
     """
-    Calcola A @ B a blocchi e restituisce una matrice sparse COO come output.
+    Calcola A @ B a blocchi, scrivendo i risultati direttamente
+    in una matrice preallocata.
 
     Args:
-        A (torch.sparse_coo_tensor): Primo tensore sparso.
-        B (torch.sparse_coo_tensor): Secondo tensore sparso.
+        A (torch.Tensor): Primo tensore denso, shape (n, k).
+        B (torch.Tensor): Secondo tensore denso, shape (k, m).
+        device (str): Device di calcolo ("cpu" o "cuda").
         batch_size (int): Dimensione del batch per l'elaborazione.
 
     Returns:
-        torch.sparse_coo_tensor: Risultato della moltiplicazione come tensore sparso.
+        torch.Tensor: Risultato della moltiplicazione come tensore denso, shape (n, m).
     """
 
-    A = A.coalesce()
-    B = B.coalesce()
+    n, k = A.shape
+    k2, m = B.shape
+    assert k == k2, f"Dimensioni incompatibili: A={A.shape}, B={B.shape}"
 
-    A_indices = A.indices()
-    A_values = A.values()
-    B_dense = B.to_dense()
+    result = torch.empty((n, m), dtype=A.dtype, device=device)
 
-    n = A.size(0)
-    m = B.size(1)
-
-    result_rows = []
-
-    for start in tqdm(range(0, n, batch_size), disable=True):
+    for start in tqdm(range(0, n, batch_size), disable=False):
         end = min(start + batch_size, n)
-
-        # Seleziona solo le righe del batch per A
-        mask = (A_indices[0] >= start) & (A_indices[0] < end)
-        batch_indices = A_indices[:, mask].clone()
-        batch_indices[0] -= start
-        batch_values = A_values[mask]
-
-        # Costruisci blocco sparso per A
-        A_block = torch.sparse_coo_tensor(
-            batch_indices,
-            batch_values,
-            size=(end - start, A.size(1)),
-            device=A.device,
-            dtype=A.dtype
-        ).coalesce()
-
-        # Sparse @ Dense (eseguito su GPU)
-        block_result = torch.matmul(A_block, B_dense)  # (batch_size, m), denso
-
-        result_rows.append(block_result.cpu())
-
-        del A_block, block_result, batch_indices, batch_values
-        torch.cuda.empty_cache()
-
-    # Ricostruisci tutta la matrice densa su CPU
-    full_dense_cpu = torch.cat(result_rows, dim=0)  # shape: (n, m)
-
-    # Pulizia della GPU per il tensore B
-    del B_dense
-    torch.cuda.empty_cache()
-
-    # Applica soglia per costruire sparse
-    mask = full_dense_cpu != 0
-
-    indices = mask.nonzero(as_tuple=False).T  # shape: (2, nnz)
-    values = full_dense_cpu[mask]
-
-    del full_dense_cpu
-    torch.cuda.empty_cache()
-
-    # Costruisci tensore sparso sul device finale
-    return torch.sparse_coo_tensor(
-            indices.to(device),
-            values.to(device),
-            size=(n, m),
-            device=device,
-            dtype=A.dtype
-    ).coalesce()
+        result[start:end, :] = torch.matmul(A[start:end, :], B)
+    return result
