@@ -12,6 +12,7 @@ import pickle
 import numpy as np
 from scipy import sparse as sp
 from sklearn.utils.extmath import randomized_svd
+from operator import itemgetter
 
 
 class RSVDModel(object):
@@ -40,21 +41,16 @@ class RSVDModel(object):
         omega_diag = np.sqrt(sigma_squared_minus_reg)
         self.item_vec = Vt.T * omega_diag
 
-    def predict(self, user, item):
-        return self.user_vec[self._data.public_users[user], :].dot(self.item_vec[self._data.public_items[item], :])
+    def predict(self, user):
+        return self.user_vec[user, :].dot(self.item_vec.T)
 
-    def get_user_recs(self, user_id, mask, top_k=100):
-        user_id = self._public_users.get(user_id)
-        b = self.user_vec[user_id] @ self.item_vec.T
-        a = mask[user_id]
-        b[~a] = -np.inf
-        indices, values = zip(*[(self._private_items.get(u_list[0]), u_list[1])
-                                for u_list in enumerate(b.data)])
-        indices = np.array(indices)
-        values = np.array(values)
-        local_k = min(top_k, len(values))
-        partially_ordered_preds_indices = np.argpartition(values, -local_k)[-local_k:]
-        real_values = values[partially_ordered_preds_indices]
-        real_indices = indices[partially_ordered_preds_indices]
-        local_top_k = real_values.argsort()[::-1]
-        return [(real_indices[item], real_values[item]) for item in local_top_k]
+    def get_user_recs(self, u, mask, k=100):
+        u_index = itemgetter(*u)(self._data.public_users)
+        preds = self.predict(u_index)
+        users_recs = np.where(mask[u_index, :], preds, -np.inf)
+        index_ordered = np.argpartition(users_recs, -k, axis=1)[:, -k:]
+        value_ordered = np.take_along_axis(users_recs, index_ordered, axis=1)
+        local_top_k = np.take_along_axis(index_ordered, value_ordered.argsort(axis=1)[:, ::-1], axis=1)
+        value_sorted = np.take_along_axis(users_recs, local_top_k, axis=1)
+        mapper = np.vectorize(self._data.private_items.get)
+        return [[*zip(item, val)] for item, val in zip(mapper(local_top_k), value_sorted)]

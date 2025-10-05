@@ -8,6 +8,7 @@ __author__ = 'Vito Walter Anelli, Claudio Pomo'
 __email__ = 'vitowalter.anelli@poliba.it, claudio.pomo@poliba.it'
 
 import time
+from tqdm import tqdm
 
 from elliot.recommender.recommender_utils_mixin import RecMixin
 
@@ -64,7 +65,14 @@ class RSVD(RecMixin, BaseRecommenderModel):
         return predictions_top_k_val, predictions_top_k_test
 
     def get_single_recommendation(self, mask, k, *args):
-        return {u: self._model.get_user_recs(u, mask, k) for u in self._ratings.keys()}
+        recs = {}
+        for i in tqdm(range(0, len(self._ratings.keys()), 1024), desc="Processing batches",
+                      total=len(self._ratings.keys()) // 1024 + (1 if len(self._ratings.keys()) % 1024 != 0 else 0)):
+            batch = list(self._ratings.keys())[i:i + 1024]
+            mat = self._model.get_user_recs(batch, mask, k)
+            proc_batch = dict(zip(batch, mat))
+            recs.update(proc_batch)
+        return recs
 
     @property
     def name(self):
