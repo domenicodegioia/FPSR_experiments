@@ -38,11 +38,11 @@ experiment:
       batch_size: 64
       l_w: 0.4
       rho: 500
-      w_1: 1.0
-      w_2: 2.0
-      eta: 0.1
+      w_1: 0.5
+      w_2: 5.0
+      eta: 1.0
       eps: 5e-3
-      tau: 0.1
+      tau: 0.4
       pop_ratio: 0.1
       seed: 2026
     external.FPSRplusF:
@@ -51,11 +51,11 @@ experiment:
         verbose: False
       eigen_dim: 256
       batch_size: 64
-      l_w: 0.4
+      l_w: 0.5
       rho: 500
-      w_1: 1.0
+      w_1: 5.0
       w_2: 2.0
-      eta: 0.1
+      eta: 1.0
       eps: 5e-3
       tau: 0.1
       pop_ratio: 0.1
