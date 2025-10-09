@@ -130,9 +130,9 @@ experiment:
         save_recs: False
         verbose: False
         validation_metric: Recall@20
-      alpha:
-      beta:
-      lamb:
-      epochs: 20
+      alpha: 0.08422832997467446
+      beta: 69.31627111404818
+      lamb: 44.099661193160514
+      epochs: 7
       batch_size: 2048
-      c:
+      c: 4

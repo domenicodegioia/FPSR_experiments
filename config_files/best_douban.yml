@@ -133,6 +133,6 @@ experiment:
       alpha: 0.08422832997467446
       beta: 69.31627111404818
       lamb: 44.099661193160514
-      epochs: 20
+      epochs: 12
       batch_size: 2048
       c: 4
