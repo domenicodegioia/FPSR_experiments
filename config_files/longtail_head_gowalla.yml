@@ -60,3 +60,15 @@ experiment:
       tau: 0.5
       pop_ratio: 0.1
       seed: 2026
+    external.BISM:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        validation_rate: 7
+      alpha: 0.08422832997467446
+      beta: 69.31627111404818
+      lamb: 44.099661193160514
+      epochs: 7
+      batch_size: 2048
+      c: 4
