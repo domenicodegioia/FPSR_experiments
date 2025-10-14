@@ -486,3 +486,14 @@ experiment:
       filter: [1,2]
       batch_eval: 1024
       seed: 2022
+
+    Slim:
+      meta:
+        save_recs: False
+        verbose: False
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      alpha: [loguniform, -6.907755278, 0]
+      l1_ratio: [loguniform, -6.907755278, 0]
+      neighborhood: [uniform, 5, 1000]
