@@ -9,6 +9,7 @@ __email__ = 'vitowalter.anelli@poliba.it, claudio.pomo@poliba.it'
 
 import time
 from operator import itemgetter
+import gc
 
 from tqdm import tqdm
 import numpy as np
@@ -88,7 +89,18 @@ class MRF(RecMixin, BaseRecommenderModel):
         # This is the most computationally expensive step.
         self.logger.info("Step 3: Inverting S_x to get the precision matrix C_hat...")
         s_x_dense = s_x.toarray()
-        c_hat = np.linalg.inv(s_x_dense)
+
+        del xtx, lambda_identity, s_x
+        gc.collect()
+
+        c_hat = np.zeros((self._data.num_items, self._data.num_items))
+        I = np.eye(self._data.num_items)
+        batch_size = 1024
+        for start in tqdm(range(0, self._data.num_items, batch_size), disable=False):
+            end = min(start + batch_size, self._data.num_items)
+            block = I[:, start:end]
+            c_hat[:, start:end] = np.linalg.solve(s_x_dense, block)
+        np.fill_diagonal(c_hat, 0)
 
         # Step 4: Compute the final B matrix from C_hat
         # B_ij = -C_ij / C_jj for i != j, and B_ii = 0
