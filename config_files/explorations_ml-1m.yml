@@ -340,6 +340,6 @@ experiment:
         validation_metric: Recall@20
         hyper_max_evals: 20
         hyper_opt_alg: tpe
-      alpha: 0.15 #[0.1,0.15,0.2,0.25,0.3,0.35,0.4]
-      beta: 0.1 #[0.1,0.15,0.2,0.25,0.3,0.35,0.4]
+      alpha: [0.1,0.15,0.2,0.25,0.3,0.35,0.4]
+      beta: [0.1,0.15,0.2,0.25,0.3,0.35,0.4]
       seed: 42
