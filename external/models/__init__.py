@@ -18,6 +18,7 @@ from .bspm import BSPM
 from .chebycf import ChebyCF
 from .linkprop import LinkProp
 from .mrf import MRF
+from .birank import BiRank
 
 import sys
 for _backend in sys.modules["external"].backend:
