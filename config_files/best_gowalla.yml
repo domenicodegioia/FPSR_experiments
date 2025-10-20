@@ -99,7 +99,7 @@ experiment:
       meta:
         save_recs: False
         verbose: False
-      eigen_dim: 256
+      eigen_dim: 128
       batch_size: 64
       l_w: 0.4
       rho: 500

@@ -105,7 +105,7 @@ experiment:
       l_w: 0.3
       rho: 500
       w_1: 1.0
-      w_2: 5.0
+      w_2: 1.0
       eta: 0.1
       eps: 5e-3
       tau: 0.5

@@ -63,7 +63,7 @@ experiment:
       batch_size: 64  # only for evaluation
       l_w: 0.4
       rho: 500
-      w_1: 1.0
+      w_1: 0.8
       w_2: 2.0
       eta: 0.1
       eps: 5e-3
