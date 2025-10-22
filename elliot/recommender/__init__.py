@@ -14,3 +14,4 @@ from .unpersonalized import Random, MostPop
 from .autoencoders import EASER
 from .graph_based import RP3beta
 from .knn import ItemKNN
+from .generic import ProxyRecommender
