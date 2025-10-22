@@ -27,3 +27,17 @@ experiment:
       tau: 0.3
       pop_ratio: 0.1
       seed: 2026
+    external.FPSRplusF:
+      meta:
+        save_recs: False
+      eigen_dim: 256
+      batch_size: 64
+      l_w: 0.2
+      rho: 5000
+      w_1: 0.5
+      w_2: 5.0
+      eta: 1.0
+      eps: 4e-3
+      tau: 0.3
+      pop_ratio: 0.1
+      seed: 2026
