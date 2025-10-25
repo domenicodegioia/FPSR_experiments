@@ -19,6 +19,7 @@ from .chebycf import ChebyCF
 from .linkprop import LinkProp
 from .mrf import MRF
 from .birank import BiRank
+from .mcoc import MCoC
 
 import sys
 for _backend in sys.modules["external"].backend:
