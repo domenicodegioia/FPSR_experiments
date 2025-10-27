@@ -20,6 +20,7 @@ from .linkprop import LinkProp
 from .mrf import MRF
 from .birank import BiRank
 from .mcoc import MCoC
+from .fagsp import FaGSP
 
 import sys
 for _backend in sys.modules["external"].backend:
