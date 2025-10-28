@@ -518,3 +518,19 @@ experiment:
       max_iter_fuzzy: 100
       min_subgroup_size: 20
       seed: 42
+
+    external.FaGSP:
+      meta:
+        save_recs: False
+        verbose: True
+        validation_metric: Recall@20
+        hyper_max_evals: 20
+        hyper_opt_alg: tpe
+      batch_eval: 256
+      pri_factor1: [16,32,64,128,256]
+      pri_factor2: [16,32,64,128,256]
+      alpha_1: [quniform,0.1,1.0,0.05]
+      alpha_2: [quniform,0.1,1.0,0.05]
+      order1: [quniform,2,14,2]
+      order2: [quniform,2,14,2]
+      q: [quniform, 0.6, 0.8, 0.05]
